@@ -14,6 +14,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -21,3 +22,20 @@ jobs:
           cache: 'npm'
           cache-dependency-path: 'app/package.json'
 
+      - name: Install Global Sonar Scanner
+        run: npm install -g sonar-scanner
+
+      - name: Install App Dependencies
+        run: npm install --prefix app
+
+      - name: SonarQube Scan
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          sonar-scanner \
+            -Dsonar.projectKey=bell-khanawat_devsecops-solution \
+            -Dsonar.organization=bell-khanawat \
+            -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
+            -Dsonar.token=${{ secrets.SONAR_TOKEN }} \
+            -Dsonar.sources=app
